@@ -22,29 +22,29 @@ class DatabaseSeeder extends Seeder
     {
         // Crear roles y permisos
         $this->createRolesAndPermissions();
-
+        
         // Crear usuarios admin y usuario normal
         $this->createUsers();
-
+        
         // Crear datos de municipalidad
         $this->createMunicipalidad();
-
+        
         // Crear categorías
         $this->createCategorias();
-
+        
         // Crear asociaciones
         $this->createAsociaciones();
-
+        
         // Crear emprendedores
         $this->createEmprendedores();
-
+        
         // Crear servicios
         $this->createServicios();
         
         // Ejecutar el seeder para asociar usuarios con emprendimientos
         $this->call(UserEmprendedorSeeder::class);
     }
-
+    
     private function createRolesAndPermissions()
     {
         // Crear permisos
@@ -58,32 +58,32 @@ class DatabaseSeeder extends Seeder
             'asociacion_create', 'asociacion_read', 'asociacion_update', 'asociacion_delete',
             'municipalidad_update', 'municipalidad_read'
         ];
-
+        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
-
+        
         // Crear roles
         $adminRole = Role::create(['name' => 'admin']);
         $userRole = Role::create(['name' => 'user']);
         $emprendedorRole = Role::create(['name' => 'emprendedor']);
-
+        
         // Asignar todos los permisos al rol admin
         $adminRole->givePermissionTo(Permission::all());
-
+        
         // Asignar permisos limitados al rol user
         $userRole->givePermissionTo([
-            'user_read', 'emprendedor_read', 'servicio_read',
+            'user_read', 'emprendedor_read', 'servicio_read', 
             'categoria_read', 'asociacion_read', 'municipalidad_read'
         ]);
-
+        
         // Asignar permisos de emprendedor
         $emprendedorRole->givePermissionTo([
-            'emprendedor_read', 'servicio_create', 'servicio_read',
+            'emprendedor_read', 'servicio_create', 'servicio_read', 
             'servicio_update', 'servicio_delete'
         ]);
     }
-
+    
     private function createUsers()
     {
         // Usuario administrador
@@ -93,11 +93,12 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'Sistema',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
             'phone' => '123456789',
             'active' => true
         ]);
         $admin->assignRole('admin');
-
+        
         // Usuario normal
         $user = User::create([
             'name' => 'Usuario Normal',
@@ -109,7 +110,7 @@ class DatabaseSeeder extends Seeder
             'active' => true
         ]);
         $user->assignRole('user');
-
+        
         // Usuario emprendedor
         $emprendedor = User::create([
             'name' => 'Emprendedor Local',
@@ -122,7 +123,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $emprendedor->assignRole('emprendedor');
     }
-
+    
     private function createMunicipalidad()
     {
         Municipalidad::create([
@@ -147,7 +148,7 @@ class DatabaseSeeder extends Seeder
             'horariodeatencion' => 'Lunes a Viernes: 8:00 am - 4:00 pm'
         ]);
     }
-
+    
     private function createCategorias()
     {
         $categorias = [
@@ -182,12 +183,12 @@ class DatabaseSeeder extends Seeder
                 'icono_url' => 'icons/guiado.svg'
             ]
         ];
-
+        
         foreach ($categorias as $categoria) {
             Categoria::create($categoria);
         }
     }
-
+    
     private function createAsociaciones()
     {
         $asociaciones = [
@@ -216,12 +217,12 @@ class DatabaseSeeder extends Seeder
                 'municipalidad_id' => 1
             ]
         ];
-
+        
         foreach ($asociaciones as $asociacion) {
             Asociacion::create($asociacion);
         }
     }
-
+    
     private function createEmprendedores()
     {
         $emprendedores = [
@@ -341,12 +342,12 @@ class DatabaseSeeder extends Seeder
                 'estado' => true
             ]
         ];
-
+        
         foreach ($emprendedores as $emprendedor) {
             Emprendedor::create($emprendedor);
         }
     }
-
+    
     private function createServicios()
     {
         $servicios = [
@@ -372,7 +373,7 @@ class DatabaseSeeder extends Seeder
                 'emprendedor_id' => 1,
                 'categorias' => [5]
             ],
-
+            
             // Servicios para Restaurante Sumaq Mijuna
             [
                 'nombre' => 'Almuerzo típico',
@@ -388,7 +389,7 @@ class DatabaseSeeder extends Seeder
                 'emprendedor_id' => 2,
                 'categorias' => [2, 5]
             ],
-
+            
             // Servicios para Artesanías Titicaca
             [
                 'nombre' => 'Chullo tradicional',
@@ -404,7 +405,7 @@ class DatabaseSeeder extends Seeder
                 'emprendedor_id' => 3,
                 'categorias' => [3, 5]
             ],
-
+            
             // Servicios para Transportes Lacustres Titicaca
             [
                 'nombre' => 'Tour a Isla Ticonata',
@@ -420,7 +421,7 @@ class DatabaseSeeder extends Seeder
                 'emprendedor_id' => 4,
                 'categorias' => [4]
             ],
-
+            
             // Servicios para Aventuras Titicaca
             [
                 'nombre' => 'Kayak al amanecer',
@@ -437,13 +438,13 @@ class DatabaseSeeder extends Seeder
                 'categorias' => [5, 6]
             ]
         ];
-
+        
         foreach ($servicios as $servicio) {
             $categorias = $servicio['categorias'];
             unset($servicio['categorias']);
-
+            
             $nuevoServicio = Servicio::create($servicio);
-
+            
             // Asociar categorías
             $nuevoServicio->categorias()->attach($categorias);
         }
